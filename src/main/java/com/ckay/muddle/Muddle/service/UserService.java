@@ -7,11 +7,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// ---- where business logic lives (like “calculate total price”) ----
+
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    // Constructor Injection
+    private final UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User testCreateUser() {
         User user = new User("chandler", "chandler@example.com");
