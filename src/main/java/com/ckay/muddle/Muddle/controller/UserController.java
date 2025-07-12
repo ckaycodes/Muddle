@@ -4,13 +4,10 @@ import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
-
 
 // handles incoming requests, uses HTTP verbs (CRUD operations) + resource URLS to interact with data
 
@@ -24,10 +21,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<User> createTestUser() {    //ResponseEntity<T> is a class in Spring that represents the entire HTTP response.
-        User createdUser = userService.testCreateUser();
-        return ResponseEntity.ok(createdUser); // Returns 200 OK with the created user in the response body
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) { //@RequestBody binds body of incoming http request
+        User createdUser = userService.registerUser(user);
+        URI location = URI.create("/api/users/" + createdUser.getId());
+        return ResponseEntity
+                .created(location) // shortcut for status(201) + location header
+                .body(createdUser);
     }
 
     @GetMapping

@@ -18,8 +18,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User testCreateUser() {
-        User user = new User("chandler", "chandler@example.com");
+
+    public User registerUser(User user) {
         return userRepository.save(user);
     }
 
