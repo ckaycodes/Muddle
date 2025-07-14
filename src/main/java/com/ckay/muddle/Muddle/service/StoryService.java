@@ -2,7 +2,6 @@ package com.ckay.muddle.Muddle.service;
 
 import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +16,7 @@ public class StoryService {
         this.storyRepository = storyRepository;
     }
 
-    public Story testCreateStory() {
-        Story story = new Story("Crazy Customer", "So nuts!", "Chandler");
+    public Story createStory(Story story) {
         return storyRepository.save(story);
     }
 

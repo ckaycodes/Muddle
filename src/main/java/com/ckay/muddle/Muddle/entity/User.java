@@ -1,45 +1,31 @@
 package com.ckay.muddle.Muddle.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-// Represents Data with OOP principles
 
+//TODO Add Lombok
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
 
+    // Getters and setters
     @Id // Annotation to designate the primary key field
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Relies on an auto-incrementing database column
     private Long id;
+    @Setter
     private String username;
+    @Setter
     private String email;
+    @Setter
+    private String password;
 
 
-    public User() {}
-
-    public User(String username, String email) {
-        this.username = username;
-        this.email = email;
-    }
-
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

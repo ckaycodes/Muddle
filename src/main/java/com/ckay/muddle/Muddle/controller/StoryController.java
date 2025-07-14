@@ -2,12 +2,10 @@ package com.ckay.muddle.Muddle.controller;
 import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.service.StoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/stories")
@@ -19,12 +17,16 @@ public class StoryController {
         this.storyService = storyService;
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<Story> createTestStory() {
-        Story createdStory = storyService.testCreateStory();
-        return ResponseEntity.ok(createdStory);
-    }
 
+    @PostMapping
+    public ResponseEntity<Story> createStory(@Valid @RequestBody Story story) {
+        Story createdStory = storyService.createStory(story);
+        URI location = URI.create("/api/stories/" + createdStory.getId());
+        return ResponseEntity
+                .created(location)
+                .body(createdStory);
+    }
+    
     @GetMapping
     public ResponseEntity<List<Story>> getStories() {
         return ResponseEntity.ok(storyService.getAllStories());
