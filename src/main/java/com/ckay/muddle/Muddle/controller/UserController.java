@@ -1,13 +1,15 @@
 package com.ckay.muddle.Muddle.controller;
 
+import com.ckay.muddle.Muddle.dto.RegisterRequest;
+import com.ckay.muddle.Muddle.dto.UserDTO;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // handles incoming requests, uses HTTP verbs (CRUD operations) + resource URLS to interact with data
 
@@ -21,18 +23,22 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) { //@RequestBody binds body of incoming http request
-        User createdUser = userService.registerUser(user);
-        URI location = URI.create("/api/users/" + createdUser.getId());
-        return ResponseEntity
-                .created(location) // shortcut for status(201) + location header
-                .body(createdUser);
+
+    @PostMapping("/auth/reigster")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        userService.registerNewUser(registerRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 
+
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> userDTOS = userService.getAllUsers()
+                .stream()
+                .map(user -> new UserDTO(user.getUsername(), user.getEmail()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userDTOS);
     }
+
 
 }
