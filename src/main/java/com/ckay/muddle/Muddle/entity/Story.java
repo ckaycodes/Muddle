@@ -1,15 +1,15 @@
 package com.ckay.muddle.Muddle.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "user")
 @Entity
 @Table(name = "stories")
 public class Story {
@@ -24,7 +24,12 @@ public class Story {
     @NotBlank(message = "Body is required")
     private String body;
 
-    @NotBlank(message = "PostedBy is required")
-    private String postedBy;
+
+    // Each story belongs to exactly one user, but a user can have many stories
+    @Setter
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY) // only fetches user object when needed
+    @JoinColumn(name = "user_id") // Store foreign key user_id, linking each story to a user
+    private User user;
 
 }

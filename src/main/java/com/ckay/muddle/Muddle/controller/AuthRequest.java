@@ -3,6 +3,7 @@ package com.ckay.muddle.Muddle.controller; // or your chosen package
 import lombok.Getter;
 import lombok.Setter;
 
+// (DTO)
 @Setter
 @Getter
 public class AuthRequest {
