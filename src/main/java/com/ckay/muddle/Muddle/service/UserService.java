@@ -18,8 +18,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    //Encode User Password
+    //Encode User Password (can't inject for some reason)
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
     public void registerNewUser(RegisterRequest registerRequest) {
 
@@ -38,11 +39,4 @@ public class UserService {
         return userRepository.findAll();
     }
 
-
-
-    // Existing method for other use
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
 }

@@ -24,18 +24,13 @@ public class UserController {
     }
 
 
-    @PostMapping("/auth/reigster")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        userService.registerNewUser(registerRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
-    }
-
+    // TODO -- Utilize ModelMapper or MapStruct dependencies later for DTOs --
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> userDTOS = userService.getAllUsers()
                 .stream()
-                .map(user -> new UserDTO(user.getUsername(), user.getEmail()))
+                .map(user -> new UserDTO(user.getId(),user.getUsername(), user.getEmail()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userDTOS);
     }

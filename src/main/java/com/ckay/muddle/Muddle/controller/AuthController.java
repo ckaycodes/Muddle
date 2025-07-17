@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.AuthenticationException;
 import java.util.Map;
 
 @RestController
@@ -44,12 +45,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.getUsername(), authRequest.getPassword()
-                )
-        );
-        String token = jwtUtil.generateToken(authRequest.getUsername());
-        return ResponseEntity.ok(Map.of("token", token));
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authRequest.getUsername(), authRequest.getPassword()
+                    )
+            );
+            String token = jwtUtil.generateToken(authRequest.getUsername());
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid username or password"));
+        }
     }
 }
