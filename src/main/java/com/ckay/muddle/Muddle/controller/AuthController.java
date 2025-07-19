@@ -48,10 +48,10 @@ public class AuthController {
         try {
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            authRequest.getUsername(), authRequest.getPassword()
+                            authRequest.getUsername().toLowerCase(), authRequest.getPassword()
                     )
             );
-            String token = jwtUtil.generateToken(authRequest.getUsername());
+            String token = jwtUtil.generateToken(authRequest.getUsername().toLowerCase()); // double check!! TODO
             return ResponseEntity.ok(Map.of("token", token));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
