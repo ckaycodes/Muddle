@@ -8,11 +8,11 @@ import lombok.Setter;
 @Getter
 public class AuthRequest {
 
-    // Getters and setters
+
     private String username;
     private String password;
 
-    // Default constructor (needed for JSON deserialization)
+
     public AuthRequest() {}
 
 }
