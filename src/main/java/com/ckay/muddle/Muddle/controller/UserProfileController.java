@@ -5,9 +5,14 @@ import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.entity.UserProfile;
 import com.ckay.muddle.Muddle.enums.CoffeeRoast;
 import com.ckay.muddle.Muddle.repository.UserProfileRepository;
+import com.ckay.muddle.Muddle.repository.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -18,17 +23,36 @@ import java.util.stream.Collectors;
 public class UserProfileController {
 
     private final UserProfileRepository profileRepository;
+    private final UserRepository userRepository;
 
-    public UserProfileController(UserProfileRepository profileRepository) {
+
+    public UserProfileController(UserProfileRepository profileRepository, UserRepository userRepository) {
         this.profileRepository = profileRepository;
+        this.userRepository = userRepository;
     }
+
+    //TODO Setup get profile info to display on a MEET THE PHAM page
 
     @PutMapping
     public ResponseEntity<UserProfileDTO> updateProfile(
-            @AuthenticationPrincipal User user,
+            Authentication authentication,
             @Valid @RequestBody UserProfileDTO dto) {
 
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         UserProfile profile = user.getProfile();
+        if (profile == null) {
+            profile = new UserProfile();
+            profile.setUser(user); // set the relation back to user
+        }
 
         profile.setBio(dto.getBio());
         profile.setEquippedBadge(dto.getEquippedBadge());

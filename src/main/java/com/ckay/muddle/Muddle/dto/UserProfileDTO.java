@@ -4,32 +4,31 @@ import com.ckay.muddle.Muddle.entity.UserProfile;
 import com.ckay.muddle.Muddle.enums.CoffeeRoast;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class UserProfileDTO {
 
-    @Getter
-    private final Long id;
 
-    @Getter
+    private Long id;
+
     @Size(max=200)
-    private final String bio;
-
-    @Getter
-    @NotNull
-    private final String equippedBadge;
+    private String bio;
 
     @NotNull
-    private final CoffeeRoast favoriteRoast;
+    private String equippedBadge;
+
+    @NotNull
+    private CoffeeRoast favoriteRoast;
 
     public UserProfileDTO(UserProfile profile) {
         this.id = profile.getId();
         this.bio = profile.getBio();
         this.equippedBadge = profile.getEquippedBadge();
-        this.favoriteRoast = CoffeeRoast.valueOf(profile.getFavoriteRoast().name());
+        this.favoriteRoast = profile.getFavoriteRoast();
     }
 
-    public Object getFavoriteRoast() {
-        return favoriteRoast;
-    }
 }
