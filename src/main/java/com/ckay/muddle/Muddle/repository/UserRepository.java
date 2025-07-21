@@ -8,6 +8,7 @@ import java.util.Optional;
 // --- talks to the database (like saving an order) ---
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
 
+    Optional<User> findByUsername(String username);
+    Optional<Object> findByEmail(String email);
 }

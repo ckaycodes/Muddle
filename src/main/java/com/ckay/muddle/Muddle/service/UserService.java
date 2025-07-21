@@ -24,16 +24,19 @@ public class UserService {
 
     public void registerNewUser(RegisterRequest registerRequest) {
 
-        //Prevents case-sensitive usernames
+        //Prevents case-sensitive usernames & emails
         String normalizedUsername = registerRequest.getUsername().toLowerCase();
+        String normalizedEmail = registerRequest.getEmail().toLowerCase();
 
         if (userRepository.findByUsername(normalizedUsername).isPresent()) {
             throw new IllegalArgumentException("Username already taken.");
+        } else if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+            throw new IllegalArgumentException("Email already taken.");
         }
 
         User newUser = new User();
         newUser.setUsername(normalizedUsername);
-        newUser.setEmail(registerRequest.getEmail());
+        newUser.setEmail(normalizedEmail);
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userRepository.save(newUser);
     }
