@@ -9,23 +9,21 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @Entity
 public class UserProfile {
 
-    @Getter
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     @Setter
     private String bio;
 
-    @Getter
     @Setter
     private String equippedBadge; // TODO: set up badge selection from a menu
 
-    @Getter
     @Enumerated(EnumType.STRING)
     private CoffeeRoast favoriteRoast;
 
