@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserProfileDTO {
 
-
     private Long id;
 
     @Size(max=200)
