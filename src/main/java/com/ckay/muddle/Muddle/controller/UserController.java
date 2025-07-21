@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// handles incoming requests, uses HTTP verbs (CRUD operations) + resource URLS to interact with data
+
 
 @RestController
-@RequestMapping("/api/users") //RESOURCE URL -> Represents users endpoint | using "api" to differentiate backend route
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;

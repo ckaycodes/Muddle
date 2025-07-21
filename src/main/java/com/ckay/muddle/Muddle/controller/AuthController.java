@@ -4,6 +4,7 @@ import com.ckay.muddle.Muddle.dto.RegisterRequest;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.security.JwtUtil;
 import com.ckay.muddle.Muddle.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
         try {
             userService.registerNewUser(registerRequest);
             return ResponseEntity.status(HttpStatus.CREATED)
