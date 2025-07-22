@@ -46,6 +46,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true); // TODO Set to false (no cookies)
         //TODO: In future add domain for deployment
         configuration.addAllowedOrigin("http://localhost:5173"); // React frontend URL (only allow requests from there)
+        configuration.addAllowedOrigin("https://muddlepriv.onrender.com");
         configuration.addAllowedMethod("*"); //Allows all HTTP methods
         configuration.addAllowedHeader("*"); //Allows any headers from the client
 
