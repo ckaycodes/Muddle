@@ -13,9 +13,9 @@ public enum CoffeeRoast {
     TESORA("Tesora", "#6D4C41"),
     JULIES("Julies Ultimate", "#6D4C41"),
     PHILTERED("Philtered Soul", "#6D4C41"),
-    AMBROSIA ("Ambrosia", "#D7CCC8"),
-    DANCING("Dancing Water", "#D7CCC8"),
-    MANHATTAN("New Manhattan", "#D7CCC8");
+    AMBROSIA ("Ambrosia", "#C8B8B3"),
+    DANCING("Dancing Water", "#C8B8B3"),
+    MANHATTAN("New Manhattan", "#C8B8B3");
 
     private final String displayName;
     private final String hexColor;

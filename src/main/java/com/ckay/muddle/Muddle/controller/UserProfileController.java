@@ -14,7 +14,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,13 +37,14 @@ public class UserProfileController {
 
     @PutMapping
     public ResponseEntity<UserProfileDTO> updateProfile(
-            Authentication authentication,
+            Authentication authentication,  //Currently Authenticated User
             @Valid @RequestBody UserProfileDTO dto) {
 
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        // Principal = object -> get User (Currently logged in)
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
 
@@ -49,18 +52,36 @@ public class UserProfileController {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         UserProfile profile = user.getProfile();
-        if (profile == null) {
+        if (profile == null) { // If User hasn't created a profile page
             profile = new UserProfile();
             profile.setUser(user); // set the relation back to user
         }
 
+        profile.setUsername(user.getUsername());
         profile.setBio(dto.getBio());
         profile.setEquippedBadge(dto.getEquippedBadge());
         profile.setFavoriteRoast(dto.getFavoriteRoast());
+        profile.setDateHired(dto.getDateHired());
+        profile.setBirthday(dto.getBirthday());
 
-
+        //Save User with updated UserProfile
         UserProfile updated = profileRepository.save(profile);
         return ResponseEntity.ok(new UserProfileDTO(updated));
+    }
+
+    @GetMapping
+    public List<UserProfileDTO> getAllProfiles() {
+        List<UserProfile> profiles = profileRepository.findAll();
+        return profiles.stream()
+                .map(UserProfileDTO::new) // map entities to DTOs
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileDTO> getProfileById(@PathVariable Long id) {
+        UserProfile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+        return ResponseEntity.ok(new UserProfileDTO(profile));
     }
 
 
@@ -72,11 +93,11 @@ public class UserProfileController {
                     map.put("name", roast.name());
                     map.put("displayName", roast.getDisplayName());
                     map.put("hexColor", roast.getHexColor());
-                    return map;
+                    return map; //Return hashmap containing a Map of all CoffeeRoast's (enums) associated name/display name/color
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); //gather into list
 
-        return ResponseEntity.ok(roasts);
+        return ResponseEntity.ok(roasts); //return all roasts and their data
     }
 
 }
