@@ -43,7 +43,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true); // TODO Set to false (no cookies)
         //TODO: In future add domain for deployment
         configuration.addAllowedOrigin("http://localhost:5173"); // React frontend URL (only allow requests from there)
         configuration.addAllowedMethod("*"); //Allows all HTTP methods

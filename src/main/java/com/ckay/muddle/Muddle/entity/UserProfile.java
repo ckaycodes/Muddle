@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
+@Setter
 @Getter
 @Entity
 public class UserProfile {
@@ -17,16 +20,22 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
+    private String username;
+
     private String bio;
 
-    @Setter
-    private String equippedBadge; // TODO: set up badge selection from a menu
+    //TODO add date hired, birthday, make it so certain people get badges based on their time at philz (veteran)
+
+    private String equippedBadge;
+
+    private LocalDate dateHired;
+
+    private LocalDate birthday;
+
 
     @Enumerated(EnumType.STRING)
     private CoffeeRoast favoriteRoast;
 
-    @Setter
     @JsonBackReference
     @OneToOne
     @JoinColumn(name = "user_id")
