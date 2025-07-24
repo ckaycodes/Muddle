@@ -43,11 +43,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true); // TODO Set to false (no cookies)
-        //TODO: In future add domain for deployment
-        configuration.addAllowedOrigin("http://localhost:5173"); // React frontend URL
+
+        configuration.setAllowCredentials(false);
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOrigin("http://localhost:5173"); // Dev frontend URL
 //        configuration.addAllowedOrigin("https://muddlepriv.onrender.com"); // Deployed Render backend
-        configuration.addAllowedOrigin("muddle-chandler-s-projects.vercel.app"); // Deployed Frontend
+        configuration.addAllowedOrigin("https://muddle-chandler-s-projects.vercel.app"); // Deployed Frontend
         configuration.addAllowedMethod("*"); //Allows all HTTP methods
         configuration.addAllowedHeader("*"); //Allows any headers from the client
 
