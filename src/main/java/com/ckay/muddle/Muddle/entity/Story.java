@@ -31,12 +31,12 @@ public class Story {
 
     // Each story belongs to exactly one user, but a user can have many stories
     @Setter
-    @JsonBackReference
+    @JsonBackReference(value = "user-story")
     @ManyToOne(fetch = FetchType.LAZY) // only fetches user object when needed
     @JoinColumn(name = "user_id") // Store foreign key user_id, linking each story to a user
     private User user;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "story-likes")
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoryLikes> storyLikes = new ArrayList<>();
 
