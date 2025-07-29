@@ -1,10 +1,14 @@
 package com.ckay.muddle.Muddle.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -31,5 +35,9 @@ public class Story {
     @ManyToOne(fetch = FetchType.LAZY) // only fetches user object when needed
     @JoinColumn(name = "user_id") // Store foreign key user_id, linking each story to a user
     private User user;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoryLikes> storyLikes = new ArrayList<>();
 
 }

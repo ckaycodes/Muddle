@@ -8,11 +8,15 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
@@ -63,5 +67,31 @@ public class StoryController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(StoryDTO);
     }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> toggleLike(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+        String username = userDetails.getUsername();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean liked = storyService.toggleLike(id, user);
+        long likeCount = storyService.getLikeCount(id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("liked", liked);
+        response.put("likeCount", likeCount);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
 
 }

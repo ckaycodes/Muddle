@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,10 +29,8 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> userDTOS = userService.getAllUsers()
                 .stream()
-                .map(user -> new UserDTO(user.getId(),user.getUsername(), user.getEmail()))
+                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getEmail()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userDTOS);
     }
-
-
 }
