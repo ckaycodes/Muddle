@@ -24,14 +24,13 @@ public class StoryLikes {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-
+    @JsonBackReference(value = "user-story")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User user;
 
+    @JsonBackReference(value = "story-likes")
     @ManyToOne(fetch = FetchType.LAZY,  optional = false)
-    @JsonBackReference
     @JoinColumn(name = "story_id",  nullable = false)
     private Story story;
 

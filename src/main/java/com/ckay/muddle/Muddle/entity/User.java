@@ -33,7 +33,7 @@ public class User {
 
     // One User can have many Stories, changes to User will cascade to Story list,
     // if a Story is removed from the list it should also be removed from database.
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-story")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Story> stories = new ArrayList<>();
 

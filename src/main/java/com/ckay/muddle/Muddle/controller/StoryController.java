@@ -35,17 +35,16 @@ public class StoryController {
 
 
     @PostMapping
-    public ResponseEntity<StoryDTO> createStory(@Valid @RequestBody Story story) {
+    public ResponseEntity<StoryDTO> createStory(@Valid @RequestBody Story story, @AuthenticationPrincipal User currentUser) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
 
         // if JWT is invalid
         if (!auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(auth.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         story.setUser(user); // Set relationship here
