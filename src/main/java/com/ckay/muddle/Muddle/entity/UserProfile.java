@@ -24,7 +24,7 @@ public class UserProfile {
 
     private String bio;
 
-    //TODO add date hired, birthday, make it so certain people get badges based on their time at philz (veteran)
+    //TODO make it so certain people get badges based on their time at philz (veteran)
 
     private String equippedBadge;
 

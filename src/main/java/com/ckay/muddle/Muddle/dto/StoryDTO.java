@@ -9,6 +9,9 @@ public class StoryDTO {
     private final String title;
     private final String body;
     private final String postedBy;
+    private int likeCount;
+    private boolean likedByCurrentUser;
+
 
     public StoryDTO(Story story) {
         this.id = story.getId();
