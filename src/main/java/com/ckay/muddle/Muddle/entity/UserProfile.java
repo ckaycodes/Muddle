@@ -36,9 +36,9 @@ public class UserProfile {
     @Enumerated(EnumType.STRING)
     private CoffeeRoast favoriteRoast;
 
-    @JsonBackReference
+    @JsonBackReference("user-profile")
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") //Specify foreign key column
     private User user;
 
     public void setFavoriteRoast(Object favoriteRoast) {

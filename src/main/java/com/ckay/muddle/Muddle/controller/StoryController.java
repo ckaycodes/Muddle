@@ -43,11 +43,10 @@ public class StoryController {
         if (!auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         User user = userRepository.findByUsername(auth.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        story.setUser(user); // Set relationship here
+        story.setUser(user); // Set relationship here: User <--> Story
 
         Story createdStory = storyService.createStory(story);
         URI location = URI.create("/api/stories/" + createdStory.getId());
@@ -56,7 +55,6 @@ public class StoryController {
                 .body(new StoryDTO(createdStory));
     }
 
-    
     @GetMapping
     public ResponseEntity<List<StoryDTO>> getStories() {
 
@@ -70,13 +68,14 @@ public class StoryController {
     @PostMapping("/{id}/like")
     public ResponseEntity<?> toggleLike(
             @PathVariable Long id,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserDetails userDetails // Currently authenticated user
     ) {
+
         if (userDetails == null) {
             throw new RuntimeException("User not authenticated");
         }
-        String username = userDetails.getUsername();
 
+        String username = userDetails.getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
