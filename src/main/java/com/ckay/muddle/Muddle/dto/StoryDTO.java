@@ -12,7 +12,7 @@ public class StoryDTO {
     private int likeCount;
     private boolean likedByCurrentUser;
 
-
+// TODO add likecoutn and likedbyCurrentUser
     public StoryDTO(Story story) {
         this.id = story.getId();
         this.title = story.getTitle();
