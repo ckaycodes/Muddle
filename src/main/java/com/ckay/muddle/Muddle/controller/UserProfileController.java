@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,8 +34,7 @@ public class UserProfileController {
         this.userRepository = userRepository;
     }
 
-    //TODO Setup get profile info to display on a MEET THE PHAM page
-
+    @Transactional
     @PutMapping
     public ResponseEntity<UserProfileDTO> updateProfile(
             Authentication authentication,  //Currently Authenticated User
@@ -51,6 +51,14 @@ public class UserProfileController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        UserProfile profile = mapDtoToUserProfile(dto, user);
+
+        //Save User with updated UserProfile
+        UserProfile updated = profileRepository.save(profile);
+        return ResponseEntity.ok(new UserProfileDTO(updated));
+    }
+
+    private static UserProfile mapDtoToUserProfile(UserProfileDTO dto, User user) {
         UserProfile profile = user.getProfile();
         if (profile == null) { // If User hasn't created a profile page
             profile = new UserProfile();
@@ -63,18 +71,16 @@ public class UserProfileController {
         profile.setFavoriteRoast(dto.getFavoriteRoast());
         profile.setDateHired(dto.getDateHired());
         profile.setBirthday(dto.getBirthday());
-
-        //Save User with updated UserProfile
-        UserProfile updated = profileRepository.save(profile);
-        return ResponseEntity.ok(new UserProfileDTO(updated));
+        return profile;
     }
 
     @GetMapping
-    public List<UserProfileDTO> getAllProfiles() {
-        List<UserProfile> profiles = profileRepository.findAll();
-        return profiles.stream()
-                .map(UserProfileDTO::new) // map entities to DTOs
+    public ResponseEntity<List<UserProfileDTO>> getAllProfiles() {
+        List<UserProfileDTO> profiles = profileRepository.findAll()
+                .stream()
+                .map(UserProfileDTO::new) // call this with every element in stream
                 .collect(Collectors.toList());
+        return ResponseEntity.ok(profiles);
     }
 
     @GetMapping("/{id}")
