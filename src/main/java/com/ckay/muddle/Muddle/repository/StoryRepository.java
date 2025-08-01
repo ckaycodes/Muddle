@@ -14,4 +14,13 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     List<Story> findAllWithUsers();
 
 
+    @Query("""
+    SELECT DISTINCT s FROM Story s
+    LEFT JOIN FETCH s.user
+    LEFT JOIN FETCH s.storyLikes sl
+    LEFT JOIN FETCH sl.user
+    """)
+    List<Story> findAllWithUsersAndLikes();
+
+
 }
