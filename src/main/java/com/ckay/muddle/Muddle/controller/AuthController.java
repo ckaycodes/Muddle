@@ -52,7 +52,7 @@ public class AuthController {
                             authRequest.getUsername().toLowerCase(), authRequest.getPassword()
                     )
             );
-            String token = jwtUtil.generateToken(authRequest.getUsername().toLowerCase()); // double check!! TODO
+            String token = jwtUtil.generateToken(authRequest.getUsername().toLowerCase());
             return ResponseEntity.ok(Map.of("token", token));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

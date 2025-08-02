@@ -4,6 +4,7 @@ import com.ckay.muddle.Muddle.dto.UserProfileDTO;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.entity.UserProfile;
 import com.ckay.muddle.Muddle.enums.CoffeeRoast;
+import com.ckay.muddle.Muddle.repository.StoryRepository;
 import com.ckay.muddle.Muddle.repository.UserProfileRepository;
 import com.ckay.muddle.Muddle.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -44,6 +45,9 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        // --- The UserDetailsService interface retrieves all the necessary information about the authenticated
+        // user for Spring Security to make authorization decisions. ---
+
         // Principal = object -> get User (Currently logged in)
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
@@ -51,6 +55,7 @@ public class UserProfileController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        //Linking the updated profile to the current User
         UserProfile profile = mapDtoToUserProfile(dto, user);
 
         //Save User with updated UserProfile

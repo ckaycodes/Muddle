@@ -27,9 +27,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.startsWith("/api/auth/") || path.equals("/api/users"); // TODO
+        return path.startsWith("/api/auth/") || path.equals("/api/users");
     }
 
+    //Validates JWT on every request, runs before controllers get called
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -38,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
+        // Check if the authentication header from the HTTP request starts with "Bearer" (prefix for JWT)
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7);
             try {
@@ -47,18 +49,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        //Check if User is already authenticated
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var userDetails = userDetailsService.loadUserByUsername(username);
 
+            //Validate the User's current token
             if (jwtUtil.validateToken(jwtToken, userDetails.getUsername())) {
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+                //Sets Authentication --> marking request as authenticated
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
+        //Let request proceed with user info attached
         filterChain.doFilter(request, response);
     }
 
