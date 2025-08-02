@@ -10,11 +10,11 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // secret key (should be stored securely, e.g. env vars)
-    private final String secret = System.getenv("JWT_SECRET");
+    //Signs and verifies JWTs in program
     private final Key secretKey;
 
     public JwtUtil() {
+        String secret = System.getenv("JWT_SECRET");
         if (secret == null) {
             throw new IllegalStateException("JWT_SECRET environment variable not set");
         }
@@ -25,7 +25,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
                 .signWith(secretKey)
                 .compact();
     }

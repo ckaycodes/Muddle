@@ -6,11 +6,14 @@ import com.ckay.muddle.Muddle.entity.StoryLikes;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.repository.StoryLikesRepository;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StoryService {
@@ -57,6 +60,14 @@ public class StoryService {
         return storyLikesRepository.countByStory(story);
     }
 
+    public void deleteStory(Long storyId) {
+        storyRepository.deleteById(storyId);
+    }
 
+    @Transactional
+    public Story getById(Long id) {
+        return storyRepository.findByIdWithUserAndLikes(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
+    }
 
 }

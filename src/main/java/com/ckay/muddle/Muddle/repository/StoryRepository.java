@@ -3,6 +3,7 @@ package com.ckay.muddle.Muddle.repository;
 import com.ckay.muddle.Muddle.entity.Story;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,5 +23,13 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     """)
     List<Story> findAllWithUsersAndLikes();
 
+    @Query("""
+    SELECT DISTINCT s FROM Story s
+    LEFT JOIN FETCH s.user
+    LEFT JOIN FETCH s.storyLikes sl
+    LEFT JOIN FETCH sl.user
+    WHERE s.id = :id
+    """)
+    Optional<Story> findByIdWithUserAndLikes(@Param("id") Long id);
 
 }
