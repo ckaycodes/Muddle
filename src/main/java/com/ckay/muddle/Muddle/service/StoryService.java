@@ -6,6 +6,7 @@ import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.StoryLikes;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.entity.UserProfile;
+import com.ckay.muddle.Muddle.exception.UnauthorizedException;
 import com.ckay.muddle.Muddle.repository.StoryLikesRepository;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
 import com.ckay.muddle.Muddle.repository.UserRepository;
@@ -24,12 +25,10 @@ public class StoryService {
     // Constructor Injection
     private final StoryRepository storyRepository;
     private final StoryLikesRepository storyLikesRepository;
-    private final UserRepository userRepository;
 
-    public StoryService(StoryRepository storyRepository, StoryLikesRepository storyLikesRepository, UserRepository userRepository) {
+    public StoryService(StoryRepository storyRepository, StoryLikesRepository storyLikesRepository) {
         this.storyRepository = storyRepository;
         this.storyLikesRepository = storyLikesRepository;
-        this.userRepository = userRepository;
     }
 
     public Story createStory(Story story) {
@@ -76,10 +75,15 @@ public class StoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
     }
 
-    public void assertOwnership(User user, Story story) {
+    public User assertOwnership(User user, Story story) {
 
+        if (user.getId().equals(story.getUser().getId())) {
+            return user;
+        }
+        else {
+            throw new UnauthorizedException("User is not authorized to edit story");
+        }
     }
-
 
     public Story mapDtoToUserStory(StoryDTO dto, User user) {
         Long storyCreatorId = dto.getId();
@@ -87,7 +91,9 @@ public class StoryService {
         Story story = storyRepository.findById(storyCreatorId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
 
-        story.setUser(user);
+        User loggedInUser = assertOwnership(user, story);
+
+        story.setUser(loggedInUser);
 
         return story;
     }

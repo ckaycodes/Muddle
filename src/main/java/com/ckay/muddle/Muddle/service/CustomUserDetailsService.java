@@ -1,6 +1,8 @@
 package com.ckay.muddle.Muddle.service;
 
+import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.User;
+import com.ckay.muddle.Muddle.exception.UnauthorizedException;
 import com.ckay.muddle.Muddle.repository.UserRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.Authentication;
@@ -47,6 +49,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     }
+
 
 
 
