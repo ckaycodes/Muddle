@@ -4,6 +4,7 @@ import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
 import com.ckay.muddle.Muddle.repository.UserRepository;
+import com.ckay.muddle.Muddle.service.CustomUserDetailsService;
 import com.ckay.muddle.Muddle.service.StoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,11 +38,13 @@ public class StoryController {
     private final StoryService storyService;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public StoryController(StoryService storyService, UserRepository userRepository, StoryRepository storyRepository) {
+    public StoryController(StoryService storyService, UserRepository userRepository, StoryRepository storyRepository, CustomUserDetailsService customUserDetailsService) {
         this.storyService = storyService;
         this.userRepository = userRepository;
         this.storyRepository = storyRepository;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
 
@@ -120,6 +123,24 @@ public class StoryController {
 
         return ResponseEntity.ok(response);
     }
+
+//        @Transactional
+//        @PutMapping
+//        public ResponseEntity<StoryDTO> updateStory(
+//                Authentication authentication,
+//                @Valid @RequestBody StoryDTO dto) {
+//
+//            User user = customUserDetailsService.getAuthenticatedUser(authentication);
+//
+//            Story story = storyService.mapDtoToUserStory(dto, user);
+//            Story updatedStory = storyRepository.save(story);
+//
+//            return ResponseEntity.ok(new StoryDTO(updatedStory));
+//
+//        }
+
+
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteStory(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
