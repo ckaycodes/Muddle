@@ -2,6 +2,7 @@ package com.ckay.muddle.Muddle.service;
 
 import com.ckay.muddle.Muddle.dto.RegisterRequest;
 import com.ckay.muddle.Muddle.dto.UserProfileDTO;
+import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.entity.UserProfile;
 import com.ckay.muddle.Muddle.repository.UserRepository;

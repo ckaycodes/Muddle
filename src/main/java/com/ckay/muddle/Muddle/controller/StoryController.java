@@ -53,12 +53,7 @@ public class StoryController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // if JWT is invalid
-        if (!auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        User user = userRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = customUserDetailsService.getAuthenticatedUser(auth);
 
         story.setUser(user); // Set relationship here: User <--> Story
 
@@ -103,16 +98,10 @@ public class StoryController {
     @PostMapping("/{id}/like")
     public ResponseEntity<?> toggleLike(
             @PathVariable Long id,
-            @AuthenticationPrincipal UserDetails userDetails // Currently authenticated user
+            Authentication authentication // Currently authenticated user
     ) {
 
-        if (userDetails == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
-
-        String username = userDetails.getUsername();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = customUserDetailsService.getAuthenticatedUser(authentication);
 
         boolean liked = storyService.toggleLike(id, user);
         long likeCount = storyService.getLikeCount(id);
@@ -124,47 +113,34 @@ public class StoryController {
         return ResponseEntity.ok(response);
     }
 
-//        @Transactional
-//        @PutMapping
-//        public ResponseEntity<StoryDTO> updateStory(
-//                Authentication authentication,
-//                @Valid @RequestBody StoryDTO dto) {
-//
-//            User user = customUserDetailsService.getAuthenticatedUser(authentication);
-//
-//            Story story = storyService.mapDtoToUserStory(dto, user);
-//            Story updatedStory = storyRepository.save(story);
-//
-//            return ResponseEntity.ok(new StoryDTO(updatedStory));
-//
-//        }
+        @Transactional
+        @PutMapping
+        public ResponseEntity<StoryDTO> updateStory(
+                Authentication authentication,
+                @Valid @RequestBody StoryDTO dto) {
 
+            User user = customUserDetailsService.getAuthenticatedUser(authentication);
 
+            Story story = storyService.mapDtoToUserStory(dto, user);
+            Story updatedStory = storyRepository.save(story);
+
+            return ResponseEntity.ok(new StoryDTO(updatedStory));
+
+        }
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteStory(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> deleteStory(@PathVariable Long id, Authentication authentication) {
 
-        if (userDetails == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"User not authenticated");
-        }
-
-        String username = userDetails.getUsername();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = customUserDetailsService.getAuthenticatedUser(authentication);
 
         Story story = storyRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
 
-
-        if (!story.getUser().getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your story");
-        }
+        storyService.assertOwnership(user, story);
 
         storyService.deleteStory(id);
         return ResponseEntity.noContent().build(); //HTTP 204 (resource gone)
     }
-
-
 
 }

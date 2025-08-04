@@ -1,5 +1,6 @@
 package com.ckay.muddle.Muddle.advice;
 
+import com.ckay.muddle.Muddle.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+
+// TODO  Add a custom ErrorResponse DTO
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -44,6 +47,17 @@ public class GlobalExceptionHandler {
         error.put("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("error", "Forbidden");
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
 
 
 }
