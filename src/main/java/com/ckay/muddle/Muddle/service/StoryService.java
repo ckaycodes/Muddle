@@ -1,11 +1,14 @@
 package com.ckay.muddle.Muddle.service;
 
 import com.ckay.muddle.Muddle.dto.StoryDTO;
+import com.ckay.muddle.Muddle.dto.UserProfileDTO;
 import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.StoryLikes;
 import com.ckay.muddle.Muddle.entity.User;
+import com.ckay.muddle.Muddle.entity.UserProfile;
 import com.ckay.muddle.Muddle.repository.StoryLikesRepository;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
+import com.ckay.muddle.Muddle.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +24,12 @@ public class StoryService {
     // Constructor Injection
     private final StoryRepository storyRepository;
     private final StoryLikesRepository storyLikesRepository;
-    public StoryService(StoryRepository storyRepository, StoryLikesRepository storyLikesRepository) {
+    private final UserRepository userRepository;
+
+    public StoryService(StoryRepository storyRepository, StoryLikesRepository storyLikesRepository, UserRepository userRepository) {
         this.storyRepository = storyRepository;
         this.storyLikesRepository = storyLikesRepository;
+        this.userRepository = userRepository;
     }
 
     public Story createStory(Story story) {
@@ -64,10 +70,28 @@ public class StoryService {
         storyRepository.deleteById(storyId);
     }
 
-    @Transactional
+    @Transactional //Seemed to fix error on retrieval
     public Story getById(Long id) {
         return storyRepository.findByIdWithUserAndLikes(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
     }
+
+    public void assertOwnership(User user, Story story) {
+
+    }
+
+
+    public Story mapDtoToUserStory(StoryDTO dto, User user) {
+        Long storyCreatorId = dto.getId();
+
+        Story story = storyRepository.findById(storyCreatorId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
+
+        story.setUser(user);
+
+        return story;
+    }
+
+
 
 }

@@ -1,7 +1,9 @@
 package com.ckay.muddle.Muddle.service;
 
 import com.ckay.muddle.Muddle.dto.RegisterRequest;
+import com.ckay.muddle.Muddle.dto.UserProfileDTO;
 import com.ckay.muddle.Muddle.entity.User;
+import com.ckay.muddle.Muddle.entity.UserProfile;
 import com.ckay.muddle.Muddle.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,6 +46,23 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public UserProfile mapDtoToUserProfile(UserProfileDTO dto, User user) {
+        UserProfile profile = user.getProfile();
+        if (profile == null) { // If User hasn't created a profile page
+            profile = new UserProfile();
+            profile.setUser(user); // set the relation back to user
+        }
+
+        profile.setUsername(user.getUsername());
+        profile.setBio(dto.getBio());
+        profile.setEquippedBadge(dto.getEquippedBadge());
+        profile.setFavoriteRoast(dto.getFavoriteRoast());
+        profile.setDateHired(dto.getDateHired());
+        profile.setBirthday(dto.getBirthday());
+        return profile;
+    }
+
 
 
 }
