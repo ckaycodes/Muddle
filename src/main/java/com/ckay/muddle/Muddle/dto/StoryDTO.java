@@ -2,6 +2,7 @@ package com.ckay.muddle.Muddle.dto;
 import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.StoryLikes;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.util.Collections;
@@ -12,8 +13,13 @@ import java.util.stream.Collectors;
 public class StoryDTO {
 
     private final Long id;
+
+    @NotNull
     private final String title;
+
+    @NotNull
     private final String body;
+
     private final String postedBy;
     private final int likeCount;
     private final boolean likedByCurrentUser;
