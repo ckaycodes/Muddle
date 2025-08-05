@@ -22,14 +22,10 @@ import java.util.Map;
 import jakarta.validation.Valid;
 import org.springframework.web.server.ResponseStatusException;
 
-// TODO -- Add the option for users to delete stories with @DeleteMapping delete request endpoint
-
-// TODO -- Add option to view who liked your story
 
 // TODO -- Add timestamp with @CreationTimestamp/@UpdateTimestamp annotation
 
-// TODO -- Add comments by making story titles clickable, leading to another "post" page dedicated to that post
-//          ^^ The post page could include who exactly liked your story
+// TODO -- Add comments & Polls
 
 @RestController
 @RequestMapping("/api/stories")
@@ -129,7 +125,7 @@ public class StoryController {
         }
 
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<?> deleteStory(@PathVariable Long id, Authentication authentication) {
 
         User user = customUserDetailsService.getAuthenticatedUser(authentication);

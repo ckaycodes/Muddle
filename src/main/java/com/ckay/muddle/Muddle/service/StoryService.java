@@ -92,8 +92,10 @@ public class StoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
 
         User loggedInUser = assertOwnership(user, story);
-
         story.setUser(loggedInUser);
+
+        story.setTitle(dto.getTitle());
+        story.setBody(dto.getBody());
 
         return story;
     }
