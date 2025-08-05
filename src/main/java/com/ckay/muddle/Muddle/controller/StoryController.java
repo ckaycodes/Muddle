@@ -109,6 +109,8 @@ public class StoryController {
         return ResponseEntity.ok(response);
     }
 
+    // TODO: Make it so the edit and delete button remain on screen even after editing.
+
         @Transactional
         @PutMapping
         public ResponseEntity<StoryDTO> updateStory(
