@@ -37,3 +37,21 @@ build/
 .env.local
 .env.*.local
 
+
+# Java & Spring
+/target
+*.class
+*.jar
+*.war
+*.log
+
+# Sensitive configs
+*.env
+application.properties
+application.yml
+
+# Node & React
+/node_modules
+/.env
+/dist
+
