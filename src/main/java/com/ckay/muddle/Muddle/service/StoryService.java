@@ -22,7 +22,6 @@ import java.util.Optional;
 @Service
 public class StoryService {
 
-    // Constructor Injection
     private final StoryRepository storyRepository;
     private final StoryLikesRepository storyLikesRepository;
 
@@ -69,7 +68,7 @@ public class StoryService {
         storyRepository.deleteById(storyId);
     }
 
-    @Transactional //Seemed to fix error on retrieval
+    @Transactional //Seemed to fix error on retrieval (likely due to the nature of liking posts)
     public Story getById(Long id) {
         return storyRepository.findByIdWithUserAndLikes(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
