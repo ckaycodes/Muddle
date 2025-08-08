@@ -65,17 +65,19 @@ public class StoryController {
 
         Long currentUserId = null;
 
+        // TODO -- Configure UserDetailsService to return ID directly when loading the user instead (?)
         if (userDetails != null) {
             currentUserId = userRepository.findByUsername(userDetails.getUsername())
                     .map(User::getId)
                     .orElse(null);
         }
 
+        // Using UserDetails class to apply visibility rules & user likes
         List<StoryDTO> stories = storyService.getAllStories(currentUserId);
         return ResponseEntity.ok(stories);
     }
 
-    // Include current user ID so the method computes isOwner
+    // Includes current user ID so the method applies ownership
     @GetMapping("/{id}")
     public ResponseEntity<StoryDTO> getStoryByID(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
