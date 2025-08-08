@@ -7,6 +7,11 @@ import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString(exclude = "user")
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "stories")
 public class Story {
     @Id
@@ -31,16 +37,24 @@ public class Story {
     @NotBlank(message = "Body is required")
     private String body;
 
-//    @CreationTimestamp
-//    @Column(name = "created_at", nullable = false, updatable = false)
-//    private Instant createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
 
+    @LastModifiedDate
+    @Column(name = "updated_at", updatable = false)
+    private Instant updatedAt;
 
-    // Each story belongs to exactly one user, but a user can have many stories
+    /*
+     * Each story belongs to exactly one user, but a user can have many stories
+     * only fetches user object when needed (lazy fetch type) to avoid circular reference
+     * Store foreign key user_id, linking each story to a user
+     */
     @JsonBackReference(value = "user-story")
-    @ManyToOne(fetch = FetchType.LAZY) // only fetches user object when needed
-    @JoinColumn(name = "user_id") // Store foreign key user_id, linking each story to a user
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
+
 
     @JsonManagedReference(value = "story-likes")
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)

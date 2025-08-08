@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,8 @@ public class StoryDTO {
     private List<String> usernamesWhoLiked;
     @JsonProperty("isOwner")
     private final boolean isOwner;
+    private Instant createdAt;
+    private Instant updatedAt;
 
 
     public StoryDTO(Story story, Long currentUserId) {
@@ -45,6 +48,8 @@ public class StoryDTO {
                         .anyMatch(sl -> sl.getUser().getId().equals(currentUserId));
 
         this.isOwner = story.getUser().getId().equals(currentUserId);
+        this.createdAt = story.getCreatedAt();
+        this.updatedAt = story.getUpdatedAt();
 
     }
 
