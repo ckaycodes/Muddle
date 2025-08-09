@@ -1,6 +1,8 @@
 package com.ckay.muddle.Muddle.controller;
+import com.ckay.muddle.Muddle.dto.StoryCommentDTO;
 import com.ckay.muddle.Muddle.dto.StoryDTO;
 import com.ckay.muddle.Muddle.entity.Story;
+import com.ckay.muddle.Muddle.entity.StoryComment;
 import com.ckay.muddle.Muddle.entity.User;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
 import com.ckay.muddle.Muddle.repository.UserRepository;
@@ -89,7 +91,7 @@ public class StoryController {
         }
 
         Story story = storyService.getById(id);
-        return ResponseEntity.ok(new StoryDTO(story,currentUserId));
+        return ResponseEntity.ok(new StoryDTO(story, currentUserId));
     }
 
 
@@ -113,22 +115,22 @@ public class StoryController {
 
     // TODO: Make it so the edit and delete button remain on screen even after editing.
 
-        @Transactional
-        @PutMapping
-        public ResponseEntity<StoryDTO> updateStory(
-                Authentication authentication,
-                @Valid @RequestBody StoryDTO dto) {
+    @Transactional
+    @PutMapping
+    public ResponseEntity<StoryDTO> updateStory(
+            Authentication authentication,
+            @Valid @RequestBody StoryDTO dto) {
 
-            User user = customUserDetailsService.getAuthenticatedUser(authentication);
+        User user = customUserDetailsService.getAuthenticatedUser(authentication);
 
-            Story story = storyService.mapDtoToUserStory(dto, user);
-            Story updatedStory = storyRepository.save(story);
+        Story story = storyService.mapDtoToUserStory(dto, user);
+        Story updatedStory = storyRepository.save(story);
 
-            return ResponseEntity.ok(new StoryDTO(updatedStory));
+        return ResponseEntity.ok(new StoryDTO(updatedStory));
 
-        }
+    }
 
-
+    //ResponseEntity of an unbounded wildcard to represent possible null value (after deletion)
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteStory(@PathVariable Long id, Authentication authentication) {
 
@@ -142,5 +144,27 @@ public class StoryController {
         storyService.deleteStory(id);
         return ResponseEntity.noContent().build(); //HTTP 204 (resource gone)
     }
+
+    @PostMapping("/comment")
+    public ResponseEntity<StoryCommentDTO> createComment(@Valid @RequestBody StoryComment storyComment,
+                                                         Authentication authentication) {
+
+        User user = customUserDetailsService.getAuthenticatedUser(authentication);
+
+        //Checking that the comment's related story exists
+        Story story = storyService.getStoryById(storyComment.getStory().getId());
+        storyComment.setStory(story);
+        storyComment.setUser(user);
+
+        StoryComment createdComment = storyService.createStoryComment(storyComment);
+
+        URI location = URI.create("/api/stories/" + story.getId() + "/comments/" + createdComment.getId());
+        return ResponseEntity
+                .created(location)
+                .body(new StoryCommentDTO(createdComment));
+    }
+
+
+
 
 }

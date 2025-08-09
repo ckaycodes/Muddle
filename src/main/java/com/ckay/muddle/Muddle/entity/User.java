@@ -19,8 +19,7 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
-    // Getters and setters
-    @Id // Annotation to designate the primary key field
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Relies on an auto-incrementing database column
 
     private Long id;

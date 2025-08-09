@@ -52,12 +52,18 @@ public class Story {
      */
     @JsonBackReference(value = "user-story")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") //explicit link of foreign key
     private User user;
 
 
     @JsonManagedReference(value = "story-likes")
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoryLikes> storyLikes = new ArrayList<>();
+
+    @JsonManagedReference(value = "story-comments")
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoryComment> storyComments = new ArrayList<>();
+
+
 
 }
