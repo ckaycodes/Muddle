@@ -36,12 +36,12 @@ public class StoryComment {
     @Column(name = "updated_at", updatable = false)
     private Instant updatedAt;
 
-    @JsonBackReference(value = "story-likes")
+    @JsonBackReference(value = "story-comments")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "story_id")
     private Story story;
 
-    @JsonBackReference(value = "user_story")
+    @JsonBackReference(value = "user-story")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

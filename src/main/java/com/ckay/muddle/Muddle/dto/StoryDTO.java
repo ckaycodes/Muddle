@@ -32,7 +32,7 @@ public class StoryDTO {
     private Instant createdAt;
     private Instant updatedAt;
 
-
+    // Includes currentUserId to include ownership status over a story in a JSON object
     public StoryDTO(Story story, Long currentUserId) {
         this.id = story.getId();
         this.title = story.getTitle();
@@ -53,8 +53,10 @@ public class StoryDTO {
 
     }
 
-
-
+    /*
+    *Constructor without currentUserId, used outside a REST controller
+    * where mapping ownership in a JSON object isn't required
+     */
     public StoryDTO(Story story) {
         this(story, null);
     }

@@ -1,22 +1,18 @@
 package com.ckay.muddle.Muddle.service;
 
-import com.ckay.muddle.Muddle.dto.StoryCommentDTO;
 import com.ckay.muddle.Muddle.dto.StoryDTO;
-import com.ckay.muddle.Muddle.dto.UserProfileDTO;
 import com.ckay.muddle.Muddle.entity.*;
 import com.ckay.muddle.Muddle.exception.UnauthorizedException;
 import com.ckay.muddle.Muddle.repository.StoryCommentRepository;
 import com.ckay.muddle.Muddle.repository.StoryLikesRepository;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
-import com.ckay.muddle.Muddle.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StoryService {
@@ -72,7 +68,7 @@ public class StoryService {
 
     // Get Story with its associated User, Likes, and Comments (Eager Fetch)
     @Transactional //Seemed to fix error on retrieval (likely due to the nature of liking posts)
-    public Story getById(Long id) {
+    public Story getStoryByIdWithDetails(Long id) {
         return storyRepository.findByIdWithUserAndLikesAndComments(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
     }
@@ -113,5 +109,21 @@ public class StoryService {
     public StoryComment createStoryComment(StoryComment comment) { return storyCommentRepository.save(comment);}
 
 
+    //Checks if a Story comment is either the author of the story or the author of the comment
+    public void checkCommentAuth(Story story, StoryComment comment, User user) {
+
+
+        boolean isStoryOwner = story.getUser().getId().equals(user.getId());
+        boolean isCommentOwner = comment.getUser().getId().equals(user.getId());
+
+        // If neither, the user cannot complete any modifying action on the comment
+        if (!isStoryOwner && !isCommentOwner) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to delete this comment");
+        }
+    }
+
+    public void deleteComment(StoryComment comment) {
+        storyCommentRepository.delete(comment);
+    }
 
 }

@@ -4,6 +4,7 @@ import com.ckay.muddle.Muddle.dto.StoryDTO;
 import com.ckay.muddle.Muddle.entity.Story;
 import com.ckay.muddle.Muddle.entity.StoryComment;
 import com.ckay.muddle.Muddle.entity.User;
+import com.ckay.muddle.Muddle.repository.StoryCommentRepository;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
 import com.ckay.muddle.Muddle.repository.UserRepository;
 import com.ckay.muddle.Muddle.service.CustomUserDetailsService;
@@ -14,10 +15,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +38,14 @@ public class StoryController {
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
     private final CustomUserDetailsService customUserDetailsService;
+    private final StoryCommentRepository storyCommentRepository;
 
-    public StoryController(StoryService storyService, UserRepository userRepository, StoryRepository storyRepository, CustomUserDetailsService customUserDetailsService) {
+    public StoryController(StoryService storyService, UserRepository userRepository, StoryRepository storyRepository, CustomUserDetailsService customUserDetailsService, StoryCommentRepository storyCommentRepository) {
         this.storyService = storyService;
         this.userRepository = userRepository;
         this.storyRepository = storyRepository;
         this.customUserDetailsService = customUserDetailsService;
+        this.storyCommentRepository = storyCommentRepository;
     }
 
 
@@ -90,7 +93,7 @@ public class StoryController {
                     .orElse(null);
         }
 
-        Story story = storyService.getById(id);
+        Story story = storyService.getStoryByIdWithDetails(id);
         return ResponseEntity.ok(new StoryDTO(story, currentUserId));
     }
 
@@ -145,26 +148,70 @@ public class StoryController {
         return ResponseEntity.noContent().build(); //HTTP 204 (resource gone)
     }
 
-    @PostMapping("/comment")
-    public ResponseEntity<StoryCommentDTO> createComment(@Valid @RequestBody StoryComment storyComment,
+    @PostMapping("/{storyId}/comments")
+    public ResponseEntity<StoryCommentDTO> createComment(@PathVariable Long storyId,
+                                                         @Valid @RequestBody StoryCommentDTO commentDTO,
                                                          Authentication authentication) {
-
         User user = customUserDetailsService.getAuthenticatedUser(authentication);
 
-        //Checking that the comment's related story exists
-        Story story = storyService.getStoryById(storyComment.getStory().getId());
+        Story story = storyService.getStoryById(storyId);
+        if (story == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        StoryComment storyComment = new StoryComment();
         storyComment.setStory(story);
         storyComment.setUser(user);
+        storyComment.setBody(commentDTO.getBody());
 
         StoryComment createdComment = storyService.createStoryComment(storyComment);
 
         URI location = URI.create("/api/stories/" + story.getId() + "/comments/" + createdComment.getId());
-        return ResponseEntity
-                .created(location)
-                .body(new StoryCommentDTO(createdComment));
+        return ResponseEntity.created(location).body(new StoryCommentDTO(createdComment,user.getId()));
     }
 
+    @GetMapping("/{storyId}/comments")
+    public ResponseEntity<List<StoryCommentDTO>> getStoryComments(@PathVariable Long storyId,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
+        // Load story with comments eagerly fetched
+        Story story = storyService.getStoryByIdWithDetails(storyId);
+        if (story == null) {
+            return ResponseEntity.notFound().build();
+        }
 
+        Long currentUserId = (userDetails != null)
+                ? userRepository.findByUsername(userDetails.getUsername())
+                .map(User::getId) // If a user is found, return their id ( user -> user.getId() )
+                .orElse(null)
+                : null; // No user found
+
+        List<StoryCommentDTO> commentDTOList = story.getStoryComments()
+                .stream()
+                .sorted(Comparator.comparing(StoryComment::getCreatedAt)) //sort comments
+                .map(comment -> new StoryCommentDTO(comment, currentUserId))
+                .toList();
+
+        return ResponseEntity.ok(commentDTOList);
+    }
+
+    @DeleteMapping("/{storyId}/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long storyId,
+                                            @PathVariable Long commentId,
+                                            Authentication authentication) {
+        User user = customUserDetailsService.getAuthenticatedUser(authentication);
+
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
+
+        StoryComment comment = storyCommentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+
+        storyService.checkCommentAuth(story,comment,user);
+
+        storyService.deleteComment(comment);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
