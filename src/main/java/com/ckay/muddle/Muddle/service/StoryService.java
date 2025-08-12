@@ -1,35 +1,33 @@
 package com.ckay.muddle.Muddle.service;
 
 import com.ckay.muddle.Muddle.dto.StoryDTO;
-import com.ckay.muddle.Muddle.dto.UserProfileDTO;
-import com.ckay.muddle.Muddle.entity.Story;
-import com.ckay.muddle.Muddle.entity.StoryLikes;
-import com.ckay.muddle.Muddle.entity.User;
-import com.ckay.muddle.Muddle.entity.UserProfile;
+import com.ckay.muddle.Muddle.entity.*;
 import com.ckay.muddle.Muddle.exception.UnauthorizedException;
+import com.ckay.muddle.Muddle.repository.StoryCommentRepository;
 import com.ckay.muddle.Muddle.repository.StoryLikesRepository;
 import com.ckay.muddle.Muddle.repository.StoryRepository;
-import com.ckay.muddle.Muddle.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StoryService {
 
     private final StoryRepository storyRepository;
     private final StoryLikesRepository storyLikesRepository;
+    private final StoryCommentRepository storyCommentRepository;
 
-    public StoryService(StoryRepository storyRepository, StoryLikesRepository storyLikesRepository) {
+    public StoryService(StoryRepository storyRepository, StoryLikesRepository storyLikesRepository, StoryCommentRepository storyCommentRepository) {
         this.storyRepository = storyRepository;
         this.storyLikesRepository = storyLikesRepository;
+        this.storyCommentRepository = storyCommentRepository;
     }
 
+    @Transactional //Any data modifying operation should use this annotation
     public Story createStory(Story story) {
         return storyRepository.save(story);
     }
@@ -41,7 +39,7 @@ public class StoryService {
                 .toList();
     }
 
-    @Transactional //Any data modifying operation needs to have this annotation
+    @Transactional
     public boolean toggleLike(Long storyId, User user) {
 
         Story story = storyRepository.findById(storyId)
@@ -68,12 +66,20 @@ public class StoryService {
         storyRepository.deleteById(storyId);
     }
 
+    // Get Story with its associated User, Likes, and Comments (Eager Fetch)
     @Transactional //Seemed to fix error on retrieval (likely due to the nature of liking posts)
-    public Story getById(Long id) {
-        return storyRepository.findByIdWithUserAndLikes(id)
+    public Story getStoryByIdWithDetails(Long id) {
+        return storyRepository.findByIdWithUserAndLikesAndComments(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
     }
 
+    // Retrieve Story by id without fetching related entities (Lazy Fetch)
+    public Story getStoryById(Long id) {
+        return storyRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
+    }
+
+    // Set User authorization for editing stories
     public User assertOwnership(User user, Story story) {
 
         if (user.getId().equals(story.getUser().getId())) {
@@ -99,6 +105,25 @@ public class StoryService {
         return story;
     }
 
+    @Transactional
+    public StoryComment createStoryComment(StoryComment comment) { return storyCommentRepository.save(comment);}
 
+
+    //Checks if a Story comment is either the author of the story or the author of the comment
+    public void checkCommentAuth(Story story, StoryComment comment, User user) {
+
+
+        boolean isStoryOwner = story.getUser().getId().equals(user.getId());
+        boolean isCommentOwner = comment.getUser().getId().equals(user.getId());
+
+        // If neither, the user cannot complete any modifying action on the comment
+        if (!isStoryOwner && !isCommentOwner) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to delete this comment");
+        }
+    }
+
+    public void deleteComment(StoryComment comment) {
+        storyCommentRepository.delete(comment);
+    }
 
 }

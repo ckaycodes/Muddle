@@ -15,7 +15,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -52,12 +54,21 @@ public class Story {
      */
     @JsonBackReference(value = "user-story")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") //explicit link of foreign key
     private User user;
 
-
+    /*
+    * Changed storyLikes to a Set to resolve multiple bag fetch error in repository query
+    * as likes don't require a specific order upon retrieval.
+    */
     @JsonManagedReference(value = "story-likes")
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StoryLikes> storyLikes = new ArrayList<>();
+    private Set<StoryLikes> storyLikes = new HashSet<>();
+
+    @JsonManagedReference(value = "story-comments")
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoryComment> storyComments = new ArrayList<>();
+
+
 
 }
