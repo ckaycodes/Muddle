@@ -26,8 +26,6 @@ import jakarta.validation.Valid;
 import org.springframework.web.server.ResponseStatusException;
 
 
-// TODO -- Add timestamp with @CreationTimestamp/@UpdateTimestamp annotation
-
 // TODO -- Add comments & Polls
 
 @RestController
@@ -52,6 +50,10 @@ public class StoryController {
     @PostMapping
     public ResponseEntity<StoryDTO> createStory(@Valid @RequestBody Story story) {
 
+        /*
+        Using SecurityContextHolder instead of @AuthenticationPrincipal because this needs
+        the full user entity to set the relationship between the User and Story
+        */
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         User user = customUserDetailsService.getAuthenticatedUser(auth);
@@ -70,7 +72,7 @@ public class StoryController {
 
         Long currentUserId = null;
 
-        // TODO -- Configure UserDetailsService to return ID directly when loading the user instead (?)
+        // TODO -- Configure UserDetailsService to return ID directly when loading the user instead
         if (userDetails != null) {
             currentUserId = userRepository.findByUsername(userDetails.getUsername())
                     .map(User::getId)
@@ -83,6 +85,7 @@ public class StoryController {
     }
 
     // Includes current user ID so the method applies ownership
+    //TODO change to "storyId"
     @GetMapping("/{id}")
     public ResponseEntity<StoryDTO> getStoryByID(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -97,7 +100,7 @@ public class StoryController {
         return ResponseEntity.ok(new StoryDTO(story, currentUserId));
     }
 
-
+    //TODO change to "storyId"
     @PostMapping("/{id}/like")
     public ResponseEntity<?> toggleLike(
             @PathVariable Long id,
@@ -134,6 +137,7 @@ public class StoryController {
     }
 
     //ResponseEntity of an unbounded wildcard to represent possible null value (after deletion)
+    //TODO change to "storyId"
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteStory(@PathVariable Long id, Authentication authentication) {
 
@@ -213,5 +217,4 @@ public class StoryController {
 
         return ResponseEntity.noContent().build();
     }
-
 }

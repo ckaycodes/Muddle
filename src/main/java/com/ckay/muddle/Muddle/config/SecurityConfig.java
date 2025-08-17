@@ -1,16 +1,12 @@
 package com.ckay.muddle.Muddle.config;
-
-import com.ckay.muddle.Muddle.repository.UserRepository;
 import com.ckay.muddle.Muddle.security.JwtAuthenticationFilter;
 import com.ckay.muddle.Muddle.security.JwtUtil;
-import com.ckay.muddle.Muddle.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
