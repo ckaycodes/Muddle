@@ -37,6 +37,7 @@ public class Story {
     private String title;
 
     @NotBlank(message = "Body is required")
+    @Column(columnDefinition = "TEXT")
     private String body;
 
     @CreationTimestamp
