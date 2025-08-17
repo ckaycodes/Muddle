@@ -36,6 +36,7 @@ public class Story {
     @Size(max = 100, message = "Title must be under 100 characters")
     private String title;
 
+    // TODO Add body limit
     @NotBlank(message = "Body is required")
     @Column(columnDefinition = "TEXT")
     private String body;

@@ -20,6 +20,7 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     LEFT JOIN FETCH s.user
     LEFT JOIN FETCH s.storyLikes sl
     LEFT JOIN FETCH sl.user
+    ORDER BY s.id DESC
     """)
     List<Story> findAllWithUsersAndLikes();
 
