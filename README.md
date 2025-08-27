@@ -1,4 +1,4 @@
-# Muddle 🚀
+# Muddle ☕
 
 **A mobile-first web app for coworker discussions (“stories”) and announcements!**  
 
