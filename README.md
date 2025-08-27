@@ -4,15 +4,6 @@
 
 ![React](https://img.shields.io/badge/React-17-blue) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-green) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue) ![JWT](https://img.shields.io/badge/JWT-auth-orange)
 
----
-
-## 📸 Screenshots
-![Login Screenshot](assets/loginScreenshot.png)
-![Profile Page Screenshot](assets/profilePage.png)
-![Users Page Screenshot](assets/philzPham.png)
-![Stories Page Screenshot](assets/storiesPage.png)
-![Story Detail Page Screenshot](assets/storyDetailPage.png)
-
 
 ---
 
@@ -35,3 +26,11 @@
 | Tailwind CSS | Lombok & Validation Annotations |  |
 
 ---
+
+## 📸 Screenshots
+![Login Screenshot](assets/loginScreenshot.png)
+![Profile Page Screenshot](assets/profilePage.png)
+![Users Page Screenshot](assets/philzPham.png)
+![Stories Page Screenshot](assets/storiesPage.png)
+![Story Detail Page Screenshot](assets/storyDetailPage.png)
+
