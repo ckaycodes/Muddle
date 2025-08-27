@@ -7,6 +7,7 @@
 ---
 
 ## 📸 Screenshots
+![Login Screenshot](assets/loginScreenshot)
 
 ---
 
