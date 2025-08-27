@@ -7,7 +7,12 @@
 ---
 
 ## 📸 Screenshots
-![Login Screenshot](assets/loginScreenshot)
+![Login Screenshot](assets/loginScreenshot.png)
+![Profile Page Screenshot](assets/profilePage.png)
+![Users Page Screenshot](assets/philzPham.png)
+![Stories Page Screenshot](assets/storiesPage.png)
+![Story Detail Page Screenshot](assets/storyDetailPage.png)
+
 
 ---
 
